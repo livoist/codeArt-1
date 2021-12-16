@@ -1,0 +1,148 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+    <script src="sketch.js"></script>
+  </head>
+  <body>
+    <main></main>
+  </body>
+</html>
+
+<script>
+  const colors = [
+    "#f8c598",
+    "#d01452",
+    "#8e186c",
+    "#ee1818",
+    "#d64918",
+    "#f72e92",
+    "#000000",
+  ];
+  const colors2 = [
+    "#acd4b9",
+    "#f5684d",
+    "#bccfa2",
+    "#fbb2a9",
+    "#f6c17f",
+    "#855a88",
+  ];
+  const colors3 = colors.concat(colors2);
+
+  let mode = 1;
+  let rClr;
+
+  function setup() {
+    createCanvas(windowWidth, windowHeight);
+    background("#181818");
+  }
+
+  function mouseClicked() {
+    // change mode
+    mode += 1;
+    if (mode > 4) mode = 1;
+  }
+
+  function mouseMoved() {
+    colorMode(HSB);
+    blendMode(SCREEN);
+
+    rClr = random(colors2);
+    let rSize;
+
+    // text
+    textSize(50);
+    textAlign(CENTER);
+    fill("#000");
+    text("Welcome", width / 2, height / 2.3);
+    text("RANDOM WORLD", width / 2, height / 2);
+
+    textSize(24);
+    text("click switch shape mode", width / 2, height / 1.7);
+
+    textSize(36);
+    text(mode, width / 2, height / 1.5);
+
+    // ratio fn
+    const ratio = (target, r1, r2) => {
+      return map(target, 0, r1, 0, r2);
+    };
+
+    // lerpColor fn
+    const calcLerpColors = (c1, c2, r) => {
+      return lerpColor(color(c1), color(c2), r);
+    };
+
+    // random Number
+    const rNum = (num) => random(num);
+
+    let drawLoops;
+    mode > 2 ? (drawLoops = 50) : (drawLoops = 400);
+
+    for (let i = 0; i < drawLoops; i++) {
+      noStroke();
+      let rPosX = rNum(width);
+      let rPosY = rNum(height);
+
+      i > 300 ? blendMode(LIGHTEST) : blendMode(SCREEN);
+      i > 300 ? (rSize = random(1, 70)) : (rSize = random(4, 12));
+
+      let rndGph = rNum(10);
+      fill(calcLerpColors(rClr, rClr, ratio(i, width, rSize)));
+
+      // Gph mode
+      if (mode === 1) rndGph > 8 ? ellipse(rPosX, rPosY, rSize) : "";
+
+      if (mode === 2) rndGph > 8 ? rect(rPosX, rPosY, rNum(40), rNum(40)) : "";
+
+      let fXPoint = rNum(width);
+      let fYPoint = rNum(height);
+
+      if (mode === 3)
+        rndGph > 6
+          ? triangle(
+              fXPoint,
+              fYPoint + random(-40, 40),
+              fXPoint + 30,
+              fYPoint + random(-40, 40),
+              fXPoint - 30,
+              fYPoint + random(-40, 40)
+            )
+          : "";
+
+      if (mode === 4) {
+        if (rndGph < 5) "";
+        if (rndGph > 4 && rndGph < 7) ellipse(rPosX, rPosY, rSize);
+        if (rndGph > 6 && rndGph < 9) rect(rPosX, rPosY, rNum(50), rNum(50));
+        if (rndGph > 8 && rndGph < 11)
+          triangle(
+            fXPoint,
+            fYPoint + random(-40, 40),
+            fXPoint + 30,
+            fYPoint + random(-40, 40),
+            fXPoint - 30,
+            fYPoint + random(-40, 40)
+          );
+      }
+    }
+
+    for (let j = 0; j < 3000; j++) {
+      blendMode(MULTIPLY);
+      stroke("#efefef");
+      line(rNum(width), rNum(height), rNum(width), rNum(height));
+    }
+
+    for (let k = 0; k < 600; k++) {
+      blendMode(MULTIPLY);
+      fill("#f7f7f7");
+      rect(rNum(width), rNum(height), rNum(50), rNum(50));
+    }
+  }
+</script>
+
+<style>
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+  }
+</style>
