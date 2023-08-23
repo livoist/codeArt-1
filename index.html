@@ -9,134 +9,141 @@
 </html>
 
 <script>
-  const colors = [
-    "#f8c598",
-    "#d01452",
-    "#8e186c",
-    "#ee1818",
-    "#d64918",
-    "#f72e92",
-    "#000000",
-  ];
-  const colors2 = [
-    "#acd4b9",
-    "#f5684d",
-    "#bccfa2",
-    "#fbb2a9",
-    "#f6c17f",
-    "#855a88",
-  ];
-  const colors3 = colors.concat(colors2);
+const colors = [
+  "#f8c598",
+  "#d01452",
+  "#8e186c",
+  "#ee1818",
+  "#d64918",
+  "#f72e92",
+  "#000000",
+];
+const colors2 = [
+  "#acd4b9",
+  "#f5684d",
+  "#bccfa2",
+  "#fbb2a9",
+  "#f6c17f",
+  "#855a88",
+];
+const colors3 = colors.concat(colors2);
 
-  let mode = 1;
-  let rClr;
+let mode = 1;
+let rClr;
 
-  function setup() {
-    createCanvas(windowWidth, windowHeight);
-    background("#181818");
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background("#181818");
+  drawText("fff")
+}
+
+function mouseClicked() {
+  // change mode
+  mode += 1;
+  if (mode > 4) mode = 1;
+  clear();
+  background("#181818");
+}
+
+function ratio(target, r1, r2) {
+  return map(target, 0, r1, 0, r2);
+};
+
+function  calcLerpColors(c1, c2, r) {
+  return lerpColor(color(c1), color(c2), r);
+};
+
+function rNum(num) { return random(num); }
+
+function drawRenderLines() {
+  for (let j = 0; j < 600; j++) {
+    blendMode(MULTIPLY);
+    stroke("#efefef");
+    line(rNum(width), rNum(height), rNum(width), rNum(height));
   }
 
-  function mouseClicked() {
-    // change mode
-    mode += 1;
-    if (mode > 4) mode = 1;
+  for (let k = 0; k < 50; k++) {
+    blendMode(MULTIPLY);
+    fill("#f7f7f7");
+    rect(rNum(width), rNum(height), rNum(50), rNum(50));
   }
+}
 
-  function mouseMoved() {
-    colorMode(HSB);
-    blendMode(SCREEN);
+function drawText(color) {
+  // text
+  textSize(50);
+  textAlign(CENTER);
+  fill(`#${color}`);
+  text("Welcome", width / 2, height / 2.3);
+  text("RANDOM WORLD", width / 2, height / 2);
 
-    rClr = random(colors2);
-    let rSize;
+  textSize(24);
+  text("click switch mode / move mouse draw canvas", width / 2, height / 1.7);
 
-    // text
-    textSize(50);
-    textAlign(CENTER);
-    fill("#000");
-    text("Welcome", width / 2, height / 2.3);
-    text("RANDOM WORLD", width / 2, height / 2);
+  textSize(36);
+  text(mode, width / 2, height / 1.5);
+}
 
-    textSize(24);
-    text("click switch shape mode", width / 2, height / 1.7);
+function mouseMoved() {
+  colorMode(HSB);
+  blendMode(SCREEN);
 
-    textSize(36);
-    text(mode, width / 2, height / 1.5);
+  rClr = random(colors2);
+  let rSize;
 
-    // ratio fn
-    const ratio = (target, r1, r2) => {
-      return map(target, 0, r1, 0, r2);
-    };
+  drawText("000")
 
-    // lerpColor fn
-    const calcLerpColors = (c1, c2, r) => {
-      return lerpColor(color(c1), color(c2), r);
-    };
+  let drawLoops;
+  mode > 2 ? (drawLoops = 6) : (drawLoops = 80);
 
-    // random Number
-    const rNum = (num) => random(num);
+  for (let i = 0; i < drawLoops; i++) {
+    noStroke();
+    let rPosX = rNum(width);
+    let rPosY = rNum(height);
 
-    let drawLoops;
-    mode > 2 ? (drawLoops = 50) : (drawLoops = 400);
+    i > 60 ? blendMode(LIGHTEST) : blendMode(SCREEN);
+    i > 60 ? (rSize = random(1, 70)) : (rSize = random(4, 12));
 
-    for (let i = 0; i < drawLoops; i++) {
-      noStroke();
-      let rPosX = rNum(width);
-      let rPosY = rNum(height);
+    let rndGph = rNum(10);
+    fill(calcLerpColors(rClr, rClr, ratio(i, width, rSize)));
 
-      i > 300 ? blendMode(LIGHTEST) : blendMode(SCREEN);
-      i > 300 ? (rSize = random(1, 70)) : (rSize = random(4, 12));
+    // Gph mode
+    if (mode === 1) rndGph > 8 ? ellipse(rPosX, rPosY, rSize) : "";
 
-      let rndGph = rNum(10);
-      fill(calcLerpColors(rClr, rClr, ratio(i, width, rSize)));
+    if (mode === 2) rndGph > 9 ? rect(rPosX, rPosY, rNum(40), rNum(40)) : "";
 
-      // Gph mode
-      if (mode === 1) rndGph > 8 ? ellipse(rPosX, rPosY, rSize) : "";
+    let fXPoint = rNum(width);
+    let fYPoint = rNum(height);
 
-      if (mode === 2) rndGph > 8 ? rect(rPosX, rPosY, rNum(40), rNum(40)) : "";
-
-      let fXPoint = rNum(width);
-      let fYPoint = rNum(height);
-
-      if (mode === 3)
-        rndGph > 6
-          ? triangle(
-              fXPoint,
-              fYPoint + random(-40, 40),
-              fXPoint + 30,
-              fYPoint + random(-40, 40),
-              fXPoint - 30,
-              fYPoint + random(-40, 40)
-            )
-          : "";
-
-      if (mode === 4) {
-        if (rndGph < 5) "";
-        if (rndGph > 4 && rndGph < 7) ellipse(rPosX, rPosY, rSize);
-        if (rndGph > 6 && rndGph < 9) rect(rPosX, rPosY, rNum(50), rNum(50));
-        if (rndGph > 8 && rndGph < 11)
-          triangle(
+    if (mode === 3)
+      rndGph > 6
+        ? triangle(
             fXPoint,
             fYPoint + random(-40, 40),
             fXPoint + 30,
             fYPoint + random(-40, 40),
             fXPoint - 30,
             fYPoint + random(-40, 40)
-          );
-      }
-    }
+          )
+        : "";
 
-    for (let j = 0; j < 3000; j++) {
-      blendMode(MULTIPLY);
-      stroke("#efefef");
-      line(rNum(width), rNum(height), rNum(width), rNum(height));
-    }
-
-    for (let k = 0; k < 600; k++) {
-      blendMode(MULTIPLY);
-      fill("#f7f7f7");
-      rect(rNum(width), rNum(height), rNum(50), rNum(50));
+    if (mode === 4) {
+      if (rndGph > 4 && rndGph < 7) ellipse(rPosX, rPosY, rSize * 2);
+      if (rndGph > 6 && rndGph < 9) rect(rPosX, rPosY, rNum(50), rNum(50));
+      if (rndGph > 8 && rndGph < 11)
+        triangle(
+          fXPoint,
+          fYPoint + random(-40, 40),
+          fXPoint + 30,
+          fYPoint + random(-40, 40),
+          fXPoint - 30,
+          fYPoint + random(-40, 40)
+        );
     }
   }
+
+  drawRenderLines()
+}
 </script>
 
 <style>
